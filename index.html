@@ -154,7 +154,7 @@
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>순번</th><th>참여형태</th><th>주사업자/부사업자</th><th>회사명</th><th>사업명</th>
+          <th>순번</th><th>참여형태</th><th>사업자구분</th><th>회사명</th><th>사업명</th>
           <th>계약금액(만원)</th><th>발주처</th><th>단계</th><th>결과</th><th>마감/결과일</th><th>담당자</th><th>비고</th><th></th>
         </tr></thead>
         <tbody id="bidTbody"><tr><td colspan="13" class="empty">불러오는 중…</td></tr></tbody>
@@ -198,7 +198,7 @@
       </div>
     </div>
     <div class="grid2">
-      <div class="field"><label>주/부사업자</label>
+      <div class="field"><label>사업자구분</label>
         <select id="bid_role"><option value="">-</option><option value="주사업자">주사업자</option><option value="부사업자">부사업자</option></select>
       </div>
       <div class="field"><label>회사명</label><input type="text" id="bid_company"></div>
@@ -386,8 +386,8 @@ function ddayInfo(dateStr, stage, result){
 function bidPassFilter(d){
   if(bidFilter==="all") return true;
   if(bidFilter==="발굴") return d.stage==="발굴";
-  if(bidFilter==="progress") return d.stage==="준비중"||d.stage==="제출완료";
-  if(bidFilter==="history") return d.stage==="수주"||d.stage==="탈락";
+  if(bidFilter==="progress") return (d.stage==="준비중"||d.stage==="제출완료") && !d.result;
+  if(bidFilter==="history") return !!d.result;
   return true;
 }
 
