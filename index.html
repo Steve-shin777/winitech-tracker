@@ -68,6 +68,8 @@
   thead th{text-align:left;padding:9px 10px;font-size:11.5px;color:var(--ink-2);border-bottom:2px solid var(--ink);white-space:nowrap;}
   tbody td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
   tbody tr:hover{background:var(--surface-2);}
+  #bidTbody td:nth-child(5), #bidsPanel thead th:nth-child(5){min-width:260px; white-space:normal;}
+  #bidTbody td:nth-child(7), #bidsPanel thead th:nth-child(7){min-width:180px; white-space:normal;}
   .pill{display:inline-block;padding:2px 9px;font-size:11.5px;font-weight:700;border-radius:3px;white-space:nowrap;}
   .p-gray{background:var(--gray-weak);color:var(--gray);}
   .p-blue{background:var(--accent-weak);color:var(--accent);}
@@ -382,10 +384,10 @@ function renderBids(){
   const q = $("bidSearch").value.trim().toLowerCase();
   let rows = bidDocs.filter(d => bidPassFilter(d) && (!q || (d.name||"").toLowerCase().includes(q) || (d.client||"").toLowerCase().includes(q)));
   rows.sort((a,b)=>{
-    const aH = a.stage==="수주"||a.stage==="탈락", bH = b.stage==="수주"||b.stage==="탈락";
-    if(aH!==bH) return aH?1:-1;
-    const ad=a.deadline||"9999", bd=b.deadline||"9999";
-    return aH ? bd.localeCompare(ad) : ad.localeCompare(bd);
+    const as = Number(a.seq); const bs = Number(b.seq);
+    const av = isNaN(as) ? Infinity : as;
+    const bv = isNaN(bs) ? Infinity : bs;
+    return av - bv;
   });
   const tbody = $("bidTbody");
   if(rows.length===0){
@@ -465,7 +467,7 @@ $("bid_saveBtn").addEventListener("click", async ()=>{
   if(!name){ toast("사업명을 입력해주세요.", true); return; }
   const id = $("bid_id").value;
   const body = {
-    seq: $("bid_seq").value.trim(),
+    seq: Number($("bid_seq").value.trim()) || 0,
     participation: $("bid_participation").value,
     role: $("bid_role").value,
     company: $("bid_company").value.trim(),
