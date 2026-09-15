@@ -370,8 +370,8 @@ let bidFilter = "all";
 const STAGE_PILL = {"발굴":"p-gray","준비중":"p-blue","제출완료":"p-orange","수주":"p-green","탈락":"p-red"};
 const RESULT_PILL = {"수주":"p-green","실주":"p-red","드랍":"p-gray"};
 
-function ddayInfo(dateStr, stage){
-  if(!dateStr || stage==="수주" || stage==="탈락") return {text: fmtDate(dateStr), cls:""};
+function ddayInfo(dateStr, stage, result){
+  if(!dateStr || stage==="수주" || stage==="탈락" || result) return {text: fmtDate(dateStr), cls:""};
   const today = new Date(); today.setHours(0,0,0,0);
   const target = new Date(dateStr+"T00:00:00");
   const diff = Math.round((target-today)/86400000);
@@ -405,7 +405,7 @@ function renderBids(){
     tbody.innerHTML = '<tr><td colspan="13" class="empty">해당하는 항목이 없습니다.</td></tr>';
   } else {
     tbody.innerHTML = rows.map(d=>{
-      const dd = ddayInfo(d.deadline, d.stage);
+      const dd = ddayInfo(d.deadline, d.stage, d.result);
       const amt = d.amount ? Number(d.amount).toLocaleString() : "-";
       return `<tr>
         <td>${esc(d.seq||"-")}</td>
@@ -426,9 +426,9 @@ function renderBids(){
     tbody.querySelectorAll("[data-edit]").forEach(b=> b.addEventListener("click", ()=> openBidModal(b.getAttribute("data-edit"))));
   }
   const discover = bidDocs.filter(d=>d.stage==="발굴").length;
-  const progress = bidDocs.filter(d=>d.stage==="준비중"||d.stage==="제출완료").length;
-  const won = bidDocs.filter(d=>d.stage==="수주");
-  const lost = bidDocs.filter(d=>d.stage==="탈락").length;
+  const progress = bidDocs.filter(d=>(d.stage==="준비중"||d.stage==="제출완료") && !d.result).length;
+  const won = bidDocs.filter(d=>d.result==="수주");
+  const lost = bidDocs.filter(d=>d.result==="실주").length;
   $("bidStatDiscover").textContent = discover;
   $("bidStatProgress").textContent = progress;
   $("bidStatWon").textContent = won.length;
